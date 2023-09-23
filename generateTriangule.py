@@ -62,13 +62,13 @@ def plot_form(coordinates, title):
     x_coords, y_coords = zip(*coordinates)
     x_coords = list(x_coords) + [x_coords[0]]
     y_coords = list(y_coords) + [y_coords[0]]
-
-    plt.figure(figsize=(5, 5))
+    
     plt.plot(x_coords, y_coords, marker='x')
     plt.title(title)
     plt.xlabel("Coordenada X")
     plt.ylabel("Coordenada Y")
     plt.grid(True)
+    plt.axis('auto')
     plt.show(block=False)
 
 def get_triangle():
@@ -88,8 +88,9 @@ def get_triangle():
     print(message)
     if isTriangle:
         plot_form(coordinates, message)
+        return coordinates
     
-    return
+    return []
 
 def get_quadrilateral():
     coordinates = []
@@ -104,18 +105,25 @@ def get_quadrilateral():
     print(message)
     if isSquare:
         plot_form(coordinates, message)
-        return
+        return coordinates
+    
+    return []
 
 def main():
+
+    forms = []
+
     canceled = False
 
     while not canceled:
+        coordinates = []
+
         formType = input("Deseja gerar um quadrilátero ou um triângulo?")
         if formType.lower().startswith("tri"):
-            get_triangle()
+            coordinates = get_triangle()
         if formType.lower().startswith("quadr"):
-            get_quadrilateral()
-        
+            coordinates = get_quadrilateral()
+
         response = ""
 
         response = input("Deseja transformar a forma geométrica? (s/n)")
@@ -141,6 +149,9 @@ def main():
         response = input("Deseja repetir? (s/n) ")
         if response.lower() == "n":
             canceled = True
+        
+        if coordinates != []:
+            forms.append(coordinates)
 
 if __name__ == "__main__":
     main()
