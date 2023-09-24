@@ -71,8 +71,8 @@ def plot_form(coordinates, title):
     plt.axis('auto')
     plt.show(block=False)
 
-def get_triangle():
-    coordinates = [] #tupla
+def get_triangle(): 
+    coordinates = []
 
     for i in range(3):
         x = get_float_input(f"Digite a coordenada x{i + 1}: ")
@@ -89,7 +89,6 @@ def get_triangle():
     if isTriangle:
         plot_form(coordinates, message)
         return coordinates
-    
     return []
 
 def get_quadrilateral():
@@ -106,52 +105,126 @@ def get_quadrilateral():
     if isSquare:
         plot_form(coordinates, message)
         return coordinates
-    
     return []
 
-def main():
+def translate_shape(shape, dx, dy):
+    translated_shape = [(x + dx, y + dy) for x, y in shape]
+    return translated_shape
 
+def scale_uniformly(shape, scale_factor):
+    scaled_shape = [(x * scale_factor, y * scale_factor) for x, y in shape]
+    return scaled_shape
+
+def scale_nonuniformly(shape, scale_x, scale_y):
+    scaled_shape = [(x * scale_x, y * scale_y) for x, y in shape]
+    return scaled_shape
+
+def rotate_clockwise(shape, angle_degrees, origin):
+    angle_radians = math.radians(angle_degrees)
+    rotated_shape = []
+    for x, y in shape:
+        translated_x = x - origin[0]
+        translated_y = y - origin[1]
+        rotated_x = translated_x * math.cos(angle_radians) + translated_y * math.sin(angle_radians)
+        rotated_y = -translated_x * math.sin(angle_radians) + translated_y * math.cos(angle_radians)
+        new_x = rotated_x + origin[0]
+        new_y = rotated_y + origin[1]
+        rotated_shape.append((new_x, new_y))
+    return rotated_shape
+
+def rotate_counterclockwise(shape, angle_degrees, origin):
+    angle_radians = math.radians(angle_degrees)
+    rotated_shape = []
+    for x, y in shape:
+        translated_x = x - origin[0]
+        translated_y = y - origin[1]
+        rotated_x = translated_x * math.cos(angle_radians) - translated_y * math.sin(angle_radians)
+        rotated_y = translated_x * math.sin(angle_radians) + translated_y * math.cos(angle_radians)
+        new_x = rotated_x + origin[0]
+        new_y = rotated_y + origin[1]
+        rotated_shape.append((new_x, new_y))
+    return rotated_shape
+
+def transform_form(coordinates):
+    print("1 - Translação")
+    print("2 - Escala Uniforme")
+    print("3 - Escala não Uniforme")
+    print("4 - Rotação no Sentido Horário")
+    print("5 - Rotação no Sentido Anti-Horário")
+    response = input("Qual transformação geométrica? ")  
+
+    if response == "1":
+        print("Translação")
+        dx = get_float_input("Informe a quantidade de translação no eixo X: ")
+        dy = get_float_input("Informe a quantidade de translação no eixo Y: ")
+        coordinates = translate_shape(coordinates, dx, dy)
+        plot_form(coordinates, "Forma após Translação")
+    elif response == "2":
+        print("Escala Uniforme")
+        scale_factor = get_float_input("Informe o fator de escala uniforme: ")
+        coordinates = scale_uniformly(coordinates, scale_factor)
+        plot_form(coordinates, "Forma após Escala Uniforme")
+    elif response == "3":
+        print("Escala não Uniforme")
+        scale_x = get_float_input("Informe o fator de escala no eixo X: ")
+        scale_y = get_float_input("Informe o fator de escala no eixo Y: ")
+        coordinates = scale_nonuniformly(coordinates, scale_x, scale_y)
+        plot_form(coordinates, "Forma após Escala não Uniforme")
+    elif response == "4":
+        print("Rotação no Sentido Horário")
+        angle_degrees = get_float_input("Informe o ângulo de rotação (em graus): ")
+        origin_x = get_float_input("Informe a coordenada x do ponto de origem da rotação: ")
+        origin_y = get_float_input("Informe a coordenada y do ponto de origem da rotação: ")
+        origin = (origin_x, origin_y)
+        coordinates = rotate_clockwise(coordinates, angle_degrees, origin)
+        plot_form(coordinates, "Forma após Rotação no Sentido Horário")
+    elif response == "5":
+        print("Rotação no Sentido Anti-Horário")
+        angle_degrees = get_float_input("Informe o ângulo de rotação (em graus): ")
+        origin_x = get_float_input("Informe a coordenada x do ponto de origem da rotação: ")
+        origin_y = get_float_input("Informe a coordenada y do ponto de origem da rotação: ")
+        origin = (origin_x, origin_y)
+        coordinates = rotate_counterclockwise(coordinates, angle_degrees, origin)
+        plot_form(coordinates, "Forma após Rotação no Sentido Anti-Horário")
+
+    return coordinates
+
+
+def main():
     forms = []
+    i = 0
 
     canceled = False
 
     while not canceled:
+        i += 1
+        form_type = "Unknown"
         coordinates = []
 
         formType = input("Deseja gerar um quadrilátero ou um triângulo?")
         if formType.lower().startswith("tri"):
             coordinates = get_triangle()
+            form_type = "Triangle"
         if formType.lower().startswith("quadr"):
             coordinates = get_quadrilateral()
+            form_type = "Quadrilateral"
+        
+        if coordinates != []:
+            forms.append([i, coordinates, form_type])
 
         response = ""
 
         response = input("Deseja transformar a forma geométrica? (s/n)")
         if response.lower() == 's':
-            print("Qual transformação geométrica? ")
-            print("1 - Translação")
-            print("2 - Escala Uniforme")
-            print("3 - Escala não Uniforme")
-            print("4 - Rotação no Sentido Horário")
-            print("5 - Rotação no Sentido Anti-Horário")
-            
-            if response == "1":
-                print("Translação")
-            elif response == "2":
-                print("Escala Uniforme")
-            elif response == "3":
-                print("Escala não Uniforme")
-            elif response == "4":
-                print("Rotação no Sentido Horário")
-            elif response == "5":
-                print("Rotação no Sentido Anti-Horário")
+            new_coordinates = transform_form(coordinates)
+            i += 1
+            forms.append([i, new_coordinates, form_type])
 
         response = input("Deseja repetir? (s/n) ")
         if response.lower() == "n":
             canceled = True
-        
-        if coordinates != []:
-            forms.append(coordinates)
 
 if __name__ == "__main__":
     main()
+
+
