@@ -25,13 +25,14 @@ def is_triangle(side_lengths):
 
     return False, "As coordenadas não foram um triângulo"
 
-def calcular_angulos(coordinates):
+def calculate_angles(coordinates):
     if len(coordinates) != 4:
         return []
 
     angles = []
     for i in range(4):
         p1, p2, p3 = coordinates[i], coordinates[(i + 1) % 4], coordinates[(i + 2) % 4]
+
         vector1 = (p2[0] - p1[0], p2[1] - p1[1])
         vector2 = (p3[0] - p2[0], p3[1] - p2[1])
         dot_product = vector1[0] * vector2[0] + vector1[1] * vector2[1]
@@ -43,7 +44,7 @@ def calcular_angulos(coordinates):
     return angles
 
 def is_quadrilateral(coordinates):
-    angles = calcular_angulos(coordinates)
+    angles = calculate_angles(coordinates)
 
     a = calculate_distance(coordinates[0], coordinates[1])
     b = calculate_distance(coordinates[1], coordinates[2])
@@ -209,20 +210,27 @@ def main():
             coordinates = get_quadrilateral()
             form_type = "Quadrilateral"
         
-        if coordinates != []:
-            forms.append([i, coordinates, form_type])
-
         response = ""
 
-        response = input("Deseja transformar a forma geométrica? (s/n)")
-        if response.lower() == 's':
-            new_coordinates = transform_form(coordinates)
-            i += 1
-            forms.append([i, new_coordinates, form_type])
-
+        if coordinates != []:
+            forms.append([i, coordinates, form_type])
+            
+            response = input("Deseja transformar a forma geométrica? (s/n)")
+            if response.lower() == 's':
+                while not canceled:
+                    new_coordinates = transform_form(coordinates)
+                    i += 1
+                    forms.append([i, new_coordinates, form_type])
+                    
+                    response = input("Deseja transformar novamente")
+                    if response.lower() == "n":
+                        canceled = True
+        
         response = input("Deseja repetir? (s/n) ")
         if response.lower() == "n":
             canceled = True
+        elif response.lower() == 's':
+            canceled = False
 
 if __name__ == "__main__":
     main()
