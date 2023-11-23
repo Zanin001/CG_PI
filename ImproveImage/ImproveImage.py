@@ -17,26 +17,42 @@ def show_gray_image(image, turn, title):
     plt.title(title) 
     plt.show(block=False)
 
-def segmentation_gray(image):
+def edges_gray(image):
+    try:
+        image_gray = image
+        if len(image_gray.shape) != 2:
+            image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        result = cv2.Canny(image_gray, 100, 200)
+        
+        return result
+    except:
+        print("Erro ao aplicar segmentação")
+        return None
+
+def edges_rgb(image):
+    print("Bordas RGB")
+
+def segmentation_gray(image, blocksize, c):
     try:
         image_gray = image
         if len(image_gray.shape) != 2:
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        result = cv2.adaptiveThreshold(image_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        result = cv2.adaptiveThreshold(image_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, blocksize, c)
 
         return result
     except:
         print("Erro ao aplicar segmentação")
         return None
 
-def segmentation_rgb(image):
+def segmentation_rgb(image, blocksize, c):
     try:
         channel_b, channel_g, channel_r = cv2.split(image)
 
-        adaptive_threshold_blue = cv2.adaptiveThreshold(channel_b, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-        adaptive_threshold_green = cv2.adaptiveThreshold(channel_g, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-        adaptive_threshold_red = cv2.adaptiveThreshold(channel_r, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        adaptive_threshold_blue = cv2.adaptiveThreshold(channel_b, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, blocksize, c)
+        adaptive_threshold_green = cv2.adaptiveThreshold(channel_g, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, blocksize, c)
+        adaptive_threshold_red = cv2.adaptiveThreshold(channel_r, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, blocksize, c)
 
         result = cv2.merge([adaptive_threshold_blue, adaptive_threshold_green, adaptive_threshold_red])
 
@@ -100,6 +116,17 @@ def equalization_rgb(image):
     except:
         print("Erro ao aplicar equalização")
         return None
+
+def get_odd_float_input(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+            if numero % 2 == 0:
+                print("Número deve ser ímpar")
+            elif numero % 2 != 0:
+                return value
+        except ValueError:
+            print("Entrada inválida")
 
 def get_float_input(prompt):
     while True:
@@ -166,17 +193,19 @@ def do_process(image):
                     image_result = result
                     show_gray_image(image_result, turn, "Suavização Cinza")
 
-        if option == 5:
-            result = segmentation_rgb(image_result)
-            if result is not None:
-                image_result = result
-                show_image(image_result, turn, "Segmentação")
-        
-        if option == 6:
-            result = segmentation_gray(image_result)
-            if result is not None:
-                image_result = result
-                show_gray_image(image_result, turn, "Segmentação Cinza")
+        if option == 5 or option == 6:
+            blockSize = get_odd_float_input(f"Tamanho da Vizinhança (Recomendação: 11): ")
+            c = get_float_input(f"Compensação (Recomendação: 2): ")
+            if option == 5:
+                result = segmentation_rgb(image_result, blockSize, c)
+                if result is not None:
+                    image_result = result
+                    show_image(image_result, turn, "Segmentação")       
+            if option == 6:
+                result = segmentation_gray(image_result, blockSize, c)
+                if result is not None:
+                    image_result = result
+                    show_gray_image(image_result, turn, "Segmentação Cinza")
 
         _continue = input("Deseja continuar? (S/N)")
         if _continue.upper() == 'S':
