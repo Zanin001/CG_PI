@@ -25,7 +25,7 @@ def is_triangle(side_lengths):
 
     return False, "As coordenadas não foram um triângulo"
 
-def calcular_angulos(coordinates):
+def calculate_angles(coordinates):
     if len(coordinates) != 4:
         return []
 
@@ -146,12 +146,13 @@ def rotate_counterclockwise(shape, angle_degrees, origin):
     return rotated_shape
 
 def transform_form(coordinates):
+    response = input("Qual transformação geométrica? ") 
     print("1 - Translação")
     print("2 - Escala Uniforme")
     print("3 - Escala não Uniforme")
     print("4 - Rotação no Sentido Horário")
     print("5 - Rotação no Sentido Anti-Horário")
-    response = input("Qual transformação geométrica? ")  
+     
 
     if response == "1":
         print("Translação")
