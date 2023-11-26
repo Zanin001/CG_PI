@@ -1,5 +1,4 @@
 import cv2
-import numpy as numpy
 from matplotlib import pyplot as plt
 
 def load_image(path):
@@ -17,21 +16,18 @@ def show_gray_image(image, turn, title):
     plt.title(title) 
     plt.show(block=False)
 
-def edges_gray(image):
+def edges_gray(image, threshold_min, threshold_max):
     try:
         image_gray = image
         if len(image_gray.shape) != 2:
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        result = cv2.Canny(image_gray, 100, 200)
+        result = cv2.Canny(image_gray, threshold_min, threshold_max)
         
         return result
     except:
         print("Erro ao aplicar segmentação")
         return None
-
-def edges_rgb(image):
-    print("Bordas RGB")
 
 def segmentation_gray(image, blocksize, c):
     try:
@@ -121,9 +117,9 @@ def get_odd_float_input(prompt):
     while True:
         try:
             value = int(input(prompt))
-            if numero % 2 == 0:
+            if value % 2 == 0:
                 print("Número deve ser ímpar")
-            elif numero % 2 != 0:
+            elif value % 2 != 0:
                 return value
         except ValueError:
             print("Entrada inválida")
@@ -162,7 +158,7 @@ def do_process(image):
         print("4 - Suavização (GRAY)")
         print("5 - Segmentação por Limiar (RGB)")
         print("6 - Segmentação por Limiar (GRAY)")
-        print("9 - Bordas (GRAY)")
+        print("7 - Bordas (GRAY)")
         option = get_option()
 
         turn = turn + 1
@@ -194,8 +190,8 @@ def do_process(image):
                     show_gray_image(image_result, turn, "Suavização Cinza")
 
         if option == 5 or option == 6:
-            blockSize = get_odd_float_input(f"Tamanho da Vizinhança (Recomendação: 11): ")
-            c = get_float_input(f"Compensação (Recomendação: 2): ")
+            blockSize = get_odd_float_input(f"Tamanho da Vizinhança (Quanto maior mais suave a imagem fica. Recomendação: 11): ")
+            c = get_float_input(f"Compensação (Quanto maior mais uniforme. Recomendação: 2): ")
             if option == 5:
                 result = segmentation_rgb(image_result, blockSize, c)
                 if result is not None:
@@ -206,6 +202,14 @@ def do_process(image):
                 if result is not None:
                     image_result = result
                     show_gray_image(image_result, turn, "Segmentação Cinza")
+
+        if option == 7:
+            threshold_min = get_float_input("Limiar Minimo (Quanto maior, mais restritiva a detecção de bordas. Recomendação: 50) : ")
+            threshold_max = get_float_input("Limiar Máximo: (Quanto maior, mais restritiva a detecção de bordas. Recomendação: 250) :")
+            result = edges_gray(image_result, threshold_min, threshold_max)
+            if result is not None:
+                image_result = result
+                show_gray_image(image_result, turn, "Bordas Cinza")
 
         _continue = input("Deseja continuar? (S/N)")
         if _continue.upper() == 'S':

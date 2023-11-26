@@ -2,7 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 # Carregando a imagem colorida
-imagem_rgb = cv2.imread('im01.jpg')
+imagem_rgb = cv2.imread('img02.jpg')
 
 # Separando os canais de cor
 canal_b, canal_g, canal_r = cv2.split(imagem_rgb)
