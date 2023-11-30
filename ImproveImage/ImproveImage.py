@@ -151,6 +151,9 @@ def do_process(image):
     show_image(cv2.cvtColor(image_result, cv2.COLOR_BGR2RGB), turn, "Original")
 
     while not finished:
+        print("Recomendação Escala de Cinza: 4 - 2 - 7")
+        print("Recomendação Escala de Cinza 2: 4 - 2 - 7 - 6")
+        print("Recomendação RGB: 3 - 1")
         print("Qual processo deseja aplicar na imagem?")
         print("1 - Equalização (RGB)")
         print("2 - Equalização (GRAY)")
